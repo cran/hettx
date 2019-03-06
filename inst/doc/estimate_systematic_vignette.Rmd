@@ -1,0 +1,248 @@
+---
+title: "Tutorial on Systematic Treatment Detection"
+author: "Ding, P., Feller, A., and Miratrix, L."
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{estimate_systematic() Tutorial}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options: 
+  chunk_output_type: console
+---
+
+# Introduction
+This document demonstrates how to use the systematic variation estimation methods of the `hettx` package. First load the package:
+```{r}
+library( hettx )
+```
+
+This package includes code to make synthetic data, which can be useful for simulation studies and illustrations.  Here we make a dataset with 3 covariates that we will use to illustrate the function calls.  For this dataset, the first two variables have a systematic relationship with treatment impact, and the third is good for adjustment for increasing power:
+```{r}
+df = make.randomized.dat( 10000, gamma.vec=c(1,1,1,2), beta.vec=c(-1,-1,1,0) )
+str( df )
+```
+
+## Basic estimation
+The function `estimate_systematic` is our core estimator that implements our various methods:
+```{r}
+rs = estimate_systematic( Yobs ~ Z,  interaction.formula = ~ A + B, data=df )
+summary(rs)
+```
+The arguments are observed outcome, observed treatment assignment, and what variables to find a systematic relationship to, expressed as a formula using the tilde notation (categorical covariates will be automatically converted).
+The output give coefficients for the model for individual systematic treatment effects. In the above, our model of effects is $\tau_i = \beta_0 + \beta_1 A_i + \beta_2 B_i$.
+
+We can obtain our standard errors and variance-covariance matrix for our estimators that comes from the design-based theory:
+```{r}
+vcov( rs )
+SE( rs )
+```
+and confidence intervals (using the normal approximation)
+```{r}
+confint( rs )
+```
+
+# OLS adjustment
+
+OLS uses the empirical covariance matrix $\widehat{S}_{xx}$ (`Sxx.hat`) for each treatment arm rather than the known Sxx:
+```{r}
+M.ols.ours = estimate_systematic( Yobs ~ Z, ~ A + B, data=df, method="OLS" )
+summary(M.ols.ours)
+M.ols.ours$beta.hat
+```
+
+Simple interaction-based OLS approach, as a comparison:
+```{r}
+M0 = lm( Yobs ~ (A+B) * Z, data=df )
+M0
+```
+
+There are no differences up to machine precision:
+```{r}
+M.ols.ours$beta - coef(M0)[4:6]
+```
+
+
+# Model adjustment
+
+The model-adjusted estimator is used automatically if you give
+two formula, one for the treatment model and one for the control adjustment model.
+
+
+```{r}
+estimate_systematic( Yobs ~ Z, interaction.formula = ~ A + B, 
+          control.formula = ~ C, data=df )
+```
+
+These formula can use the same covariates. Here we also adjust for the covariates used in our treatment model:
+```{r}
+rsA2 = estimate_systematic( Yobs ~ Z,  ~ A + B, ~ A + B + C, data=df )
+coef( rsA2 )
+```
+
+
+# Model adjustment + OLS adjustment
+
+We can also adjust for additional covariates using the OLS implementation:
+```{r}
+rsB = estimate_systematic( Yobs ~ Z,  ~ A + B, ~ C, data=df, method = "OLS" )
+coef( rsB )
+rsB2 = estimate_systematic( Yobs ~ Z,  ~ A + B, ~ A + B + C, data=df, method = "OLS" )
+coef( rsB2 )
+```
+
+As a comparison, using `lm()` we have
+```{r}
+rsB.lm = lm( Yobs ~ Z * (A+B) + C, data=df )
+coef( rsB.lm )
+cbind( C.only=coef( rsB ), ABC=coef( rsB2 ), lmC=coef( rsB.lm )[c(2,6,7)])
+```
+Note that the model adjustment approach is not the same as including a term as a control variable in a linear regression (and you can do both).
+
+
+
+# Oracle estimator (for simulations and verification of formulae)
+If we know all potential outcomes, we can calculate the exact beta for the sample.
+(This is useful for simulation studies.)
+We can also get the true SE, which is why we pass a sample treatment vector (so it can calculate proportion treated, under the assumption of simple random assignment):  
+```{r}
+Moracle = estimate_systematic( Y.1 + Y.0 ~ Z, ~ A + B, data=df )
+summary(Moracle)
+SE( Moracle )
+```
+It will give the same results regardless of $Z$ assuming the total number of units remains the same.
+
+
+
+
+# Looking at $R^2$
+
+We can look at treatment effect explained.  We will look at two scenarios, one with no ideosyncratic variation on top of the systematic variation, and one with a substantial amount.  We will plot the R2 sensitivity curves for each on top of each other.
+```{r}
+df = make.randomized.dat( 1000, beta.vec=c(-1,1,1) )
+rs = estimate_systematic( Yobs ~ Z, ~ A + B, data=df, method="OLS" )
+r2 = R2( rs )
+r2
+```
+
+And now our DGP with lots of idiosyncratic variation:
+```{r}
+df = make.randomized.dat( 1000, beta.vec=c(-1,1,1), ideo.sd=3 )
+rs = estimate_systematic( Yobs ~ Z, ~ A + B, data=df, method="OLS" )
+r2b = R2( rs )
+r2b    
+```
+Plot our results:
+```{r}
+plot( r2 )
+plot( r2b, ADD=TRUE, col="green" )
+```
+
+And here is a case where we have 100% systematic variation along a single variable.
+```{r}
+df = make.randomized.dat( 1000, beta.vec=c(-1,1,0) )
+rs = estimate_systematic( Yobs ~ Z, ~ A + B, data=df, method="OLS" )
+r2 = R2( rs )
+r2    
+plot( r2 )
+```
+
+See, we have 100% $R^2_\tau$, if we knew the true individual treatment effects:
+```{r}
+plot( df$tau ~ df$A )
+```
+
+## Comparing estimators
+Here we look at how our ability to capture $R^2_\tau$ differs across different estimators.
+We have systematic effects for both $A$ and $B$, and $C$ is related to baseline outcomes but not impacts.
+```{r}
+set.seed( 1020 )
+df = make.randomized.dat( 1000, beta.vec=c(-1,1,1), 
+                          gamma.vec = c( 1, 2, 2, 1 ),
+                          ideo.sd=1 )
+
+rs = estimate_systematic( Yobs ~ Z, ~ A + B, data=df )
+r2 = R2( rs )
+plot( r2, col="green" )
+
+# adjusted
+rs = estimate_systematic( Yobs ~ Z, ~ A + B, ~ C, data=df )
+r2 = R2( rs )
+plot( r2, ADD=TRUE )
+
+# adjusted + OLS
+rs = estimate_systematic( Yobs ~ Z, ~ A + B, ~ C, data=df, method = "OLS" )
+r2 = R2( rs )
+plot( r2, ADD=TRUE, col="blue" )
+```
+
+
+
+# Treatment variation and non-compliance
+
+Our estimators also work in non-compliance contexts (see paper for details).  The story is analogous to the code above.
+
+For this illustration we again generate some fake data using a provided function included with the package.
+This method takes a complier treatment heterogeniety model defined by `beta`:
+```{r}
+beta = c(-1,6,0)
+n = 10000
+
+data = make.randomized.compliance.dat( n, beta.vec=beta )
+names(data)
+```
+
+Our four observable groups defined by treatment assignment and take-up are as follows:
+
+```{r observed_subgroups}
+zd = with( data, interaction( Z, D, sep="-" ) )
+boxplot( Yobs ~ zd, data=data, ylab="Yobs")
+```
+
+The true relationships for the three latent groups are as follows:
+
+```{r, fig.width = 7}
+par( mfrow=c(1,2), mgp=c(1.8,0.8,0), mar=c(3,3,0.5,0.5) )
+plot( Y.1 - Y.0 ~ A, data=data, col=as.factor(data$S), pch=19, cex=0.5 )
+plot( Y.1 - Y.0 ~ B, data=data, col=as.factor(data$S), pch=19, cex=0.5 )
+legend( "topleft", legend=levels( as.factor( data$S ) ), pch=19, col=1:3 )
+```
+
+(We see no impacts for the AT and the NT as required under the assumptions of noncompliance here.)
+
+In this scenario we have a moderate compiance rate, meaning not a particulary weak instrument:
+```{r}
+prop.table( table( data$S ) )
+```
+
+## Estimating the effects
+We use our same method, but by using the ``bar'' notation, we can specify our treatment assigment $Z$ and our compliance status $D$ in our primary formula.
+Now our treatment variation formula is for the compliers (the always- and never-takers have no impact or variation).
+```{r}
+rs = estimate_systematic( Yobs ~ D | Z, ~ A + B, data=data )
+summary(rs)
+rs$beta.hat
+SE( rs )
+```
+We can get our R2 measure
+```{r}
+r2 = R2( rs )
+r2
+plot( r2 )
+```
+
+## The 2SLS Approach
+Analogous to the OLS approach, above, we can use a 2SLS approach here.
+```{r}
+rs2SLS = estimate_systematic( Yobs ~ Z | D,  ~ A + B, data=data, method="2SLS" )
+summary(rs2SLS)
+SE( rs2SLS )
+```
+Comparing our errors in estimation from the two approaches we have:
+```{r}
+err = rs$beta.hat - beta
+err2SLS = rs2SLS$beta.hat - beta
+data.frame( SE.RI = SE( rs ), err.RI=err, SE.2SLS = SE( rs2SLS ), err.2SLS = err2SLS )
+```
+
