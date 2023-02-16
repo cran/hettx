@@ -2,8 +2,8 @@ Package: hettx
 Type: Package
 Title: Fisherian and Neymanian Methods for Detecting and Measuring
         Treatment Effect Variation
-Version: 0.1.1
-Date: 2019-03-02
+Version: 0.1.2
+Date: 2023-02-16
 Authors@R: c(
   person("Peng", "Ding", email = "pengdingpku@berkeley.edu", role = "aut"),
   person("Avi", "Feller", email = "afeller@berkeley.edu", role = "aut"),
@@ -17,19 +17,20 @@ Description: Implements methods developed by Ding, Feller, and Miratrix (2016) <
     implementing the proposed methods, as well as helper functions for analyzing and visualizing the results of the test.
 License: GPL (>= 3)
 Imports: quantreg, plyr, mvtnorm, MASS, foreach, parallel, doParallel,
-        moments, formula.tools, purrr, dplyr, tidyverse
+        moments, formula.tools, purrr, dplyr, ggplot2, tidyr
 Depends: R (>= 2.14.0)
-BugReports: https://github.com/bfifield/detect_heteffects/issues
-RoxygenNote: 6.1.1
+BugReports: https://github.com/bfifield/hettx/issues
+RoxygenNote: 7.1.2
 Suggests: testthat, knitr, rmarkdown
 Encoding: UTF-8
 VignetteBuilder: knitr
+LazyData: true
 NeedsCompilation: no
-Packaged: 2019-03-02 18:51:21 UTC; benfifield
+Packaged: 2023-02-16 01:37:00 UTC; benfifield
 Author: Peng Ding [aut],
   Avi Feller [aut],
   Ben Fifield [aut, cre],
   Luke Miratrix [aut]
 Maintainer: Ben Fifield <benfifield@gmail.com>
 Repository: CRAN
-Date/Publication: 2019-03-06 15:20:32 UTC
+Date/Publication: 2023-02-16 03:20:02 UTC
