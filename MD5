@@ -1,4 +1,4 @@
-0badc9a71104fc9d1945d600fed0adf3 *DESCRIPTION
+279a7891d27075e00feb36b8c61c1c7c *DESCRIPTION
 14b9120fcf13c25133ecdb8274df9a26 *NAMESPACE
 7b0559ec0fbf9aa1cc5fbc8a5e88a160 *R/S3_plot.R
 1662107052d489f1dbfcc90d20d4987c *R/S3_print.R
@@ -11,7 +11,7 @@ ce2cc0040e8a39fc2c0388ee27a5d0f3 *R/helper_R2.R
 c805b31cfefe7a18344b318a50c27e33 *R/helper_est_beta.R
 f5601532115fc54d324c9041646aa922 *R/helper_frt.R
 262087426b3ff3aca8918c4204a2abe5 *R/helper_stat_calc.R
-457b3ab33b5ae484a9d6c24365af9739 *R/hettx-package.R
+6a163cc3a102bd1efb67040779302156 *R/hettx-package.R
 58e86869ec0bfc11ad4c68c66bccadf4 *R/make_fake_data.R
 44495c216fc1f013f1e5e74cdfb1de60 *build/vignette.rds
 43140d7bc3e4a0115590381217fc6a52 *data/Penn46_ascii.rda
@@ -20,10 +20,10 @@ db43c26ed370d1f5e5dc9fa52de8f0f4 *data/Penn46_ascii.txt.bz2
 ca2e01f354eeadae90cedea3ece6cdb0 *data/ToyData.txt.bz2
 7bf1f0e9840fe96782c7db52f12a1cd3 *inst/doc/detect_idiosyncratic_vignette.R
 5464b0f12c77e9a119d0d4c89e81dc43 *inst/doc/detect_idiosyncratic_vignette.Rmd
-f30da893c011253de7f273083b7166f0 *inst/doc/detect_idiosyncratic_vignette.html
+2a1c6b194dfa089985e53d37af5bd258 *inst/doc/detect_idiosyncratic_vignette.html
 9978dab6b01696c31fd420c19e54a51a *inst/doc/estimate_systematic_vignette.R
 1ef0ef05ba18260daa99aee3a797ff02 *inst/doc/estimate_systematic_vignette.Rmd
-455d87b6c09b2b760ca45c5cb60690aa *inst/doc/estimate_systematic_vignette.html
+1023f8541657a0cded315dc029d19faf *inst/doc/estimate_systematic_vignette.html
 d060bf7bbd543e77fed58c2686444188 *man/KS.stat.Rd
 c9bf8affc40fe7a2a2bde241885b8ea7 *man/Penn46_ascii.Rd
 d8083c5183e5bdb38c613a3024b2142b *man/R2.Rd
@@ -39,7 +39,7 @@ c3e2e256f1d48edf51560746f2f7325f *man/SKS.stat.cov.rq.Rd
 f4b36437d039a30d704560725d5db49e *man/detect_idiosyncratic.Rd
 f3fdeeef96fad74579867d7f8d8f4dc6 *man/estimate_systematic.Rd
 f461decf1b1d8d64803ff9535ea400e6 *man/get.p.value.Rd
-1554125ea5a82fca2e28dc2443927168 *man/hettx-package.Rd
+ba1f4a03ca810faa641d8d078228c198 *man/hettx-package.Rd
 8d4278fa6ddde5bd7ceb4c2045c93a75 *man/make.linear.data.Rd
 4c0c7ba9cbd432068b2aff193af0f6c9 *man/make.randomized.compliance.dat.Rd
 8705b92fd98ec8dd73ed2af143993ea6 *man/make.randomized.dat.Rd

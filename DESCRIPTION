@@ -2,8 +2,8 @@ Package: hettx
 Type: Package
 Title: Fisherian and Neymanian Methods for Detecting and Measuring
         Treatment Effect Variation
-Version: 0.1.2
-Date: 2023-02-16
+Version: 0.1.3
+Date: 2023-08-19
 Authors@R: c(
   person("Peng", "Ding", email = "pengdingpku@berkeley.edu", role = "aut"),
   person("Avi", "Feller", email = "afeller@berkeley.edu", role = "aut"),
@@ -26,11 +26,11 @@ Encoding: UTF-8
 VignetteBuilder: knitr
 LazyData: true
 NeedsCompilation: no
-Packaged: 2023-02-16 01:37:00 UTC; benfifield
+Packaged: 2023-08-19 12:58:35 UTC; benfifield
 Author: Peng Ding [aut],
   Avi Feller [aut],
   Ben Fifield [aut, cre],
   Luke Miratrix [aut]
 Maintainer: Ben Fifield <benfifield@gmail.com>
 Repository: CRAN
-Date/Publication: 2023-02-16 03:20:02 UTC
+Date/Publication: 2023-08-19 22:22:34 UTC
